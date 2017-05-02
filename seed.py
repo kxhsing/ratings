@@ -47,7 +47,7 @@ def load_movies():
     for row in open("seed_data/u.item"):
         row = row.rstrip()
         items = row.split("|")
-        movie_id, title, released_str, url = (items[i] for i in ids
+        movie_id, title, released_str, url = (items[i] for i in ids)
 
         # Changing to Unicode
         # title = title.decode("latin-1")
