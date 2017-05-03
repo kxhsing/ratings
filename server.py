@@ -39,15 +39,51 @@ def register_form():
 @app.route('/register', methods=["POST"])
 def register_complete():
     """After user registers, adds to db and goes back to homepage."""
+    email = request.form.get("email")
+    password = request.form.get("password")
 
-    return redirect("/")
+    # import pdb; pdb.set_trace()
 
-@app.route('/login', methods=["POST"])
+    if not User.query.filter(User.email==email).all():
+        new_user = User(email=email, password=password)
+
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect("/")
+    else:
+        flash("User email already exists.")
+        return redirect("/register")
+
+
+@app.route('/login', methods=["GET"])
 def login_form():
     """Direct users to login page"""
 
     return render_template("login_form.html")
 
+
+@app.route('/login', methods=["POST"])
+def login_check():
+    """Check if email and password match to database"""
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if not User.query.filter(User.email==email).all():
+        flash("User does not exist")
+        return redirect("/login")
+    else:
+        user = User.query.filter(User.email==email).one()
+        if password==user.password:
+            flash("You are logged in")
+            return redirect("/")
+        else:
+            flash("Password is incorrect, please try again")
+            return redirect("/login")
+
+    # else:
+    #     if User.query.filter(User.email==email).one().password
+
+    return redirect("/")
 
 @app.route('/users')
 def user_list():
