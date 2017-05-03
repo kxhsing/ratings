@@ -13,6 +13,10 @@
       {% endfor %}
   {% endwith %}
 
+  {% if 'user_id' in session %}
+    <a href="/logout"> Log Out </a>
+  {% endif %}
+
 
 
   {% block content %} put your content here {% endblock %}

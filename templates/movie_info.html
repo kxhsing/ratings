@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h2>Movie Info for {{ movie.title }}</h2><br>
+    Released Date: {{ movie.released_at }}<br>
+    <a href="{{ movie.imdb_url }}"> IMDB Link</a><br>
+    <table>
+      <tr>
+        <th>User ID</th>
+        <th>Rating/Score</th>
+      </tr>
+      {% for rating in movie.ratings %}
+        <tr>
+          <td> <a href="/users/{{ rating.user_id }}"> {{ rating.user_id }} </a> </td>
+          <td> {{ rating.score }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
+{% endblock %}

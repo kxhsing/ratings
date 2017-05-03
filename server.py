@@ -74,8 +74,9 @@ def login_check():
     else:
         user = User.query.filter(User.email==email).one()
         if password==user.password:
+            session['user_id'] = user.user_id 
             flash("You are logged in")
-            return redirect("/")
+            return redirect("/users/"+str(user.user_id))
         else:
             flash("Password is incorrect, please try again")
             return redirect("/login")
@@ -85,12 +86,53 @@ def login_check():
 
     return redirect("/")
 
+
+@app.route('/logout')
+def logout():
+    """Logs out user."""
+    flash("You are logged out.")
+    del session["user_id"]
+
+    return redirect("/")
+
+
 @app.route('/users')
 def user_list():
     """Show list of users."""
 
     users = User.query.all()
     return render_template("user_list.html", users=users)
+
+@app.route('/users/<user_id>')
+def user_info(user_id):
+    """Show user info"""
+
+    user = User.query.filter(User.user_id==user_id).one()
+
+    user_movie_ratings = []
+    for rating in user.ratings:
+        each_rating = (rating.movie_id, rating.movie.title, rating.score)
+        user_movie_ratings.append(each_rating)
+
+    return render_template("user_info.html", user=user, user_movie_ratings=user_movie_ratings)
+
+
+@app.route('/movies')
+def movie_list():
+    """Show list of movies."""
+
+    movies = Movie.query.order_by(Movie.title).all()
+
+    return render_template("movie_list.html", movies=movies)
+
+
+@app.route('/movies/<movie_id>')
+def movie_info(movie_id):
+    """Show movie info."""
+    movie = Movie.query.filter(Movie.movie_id==movie_id).one()
+
+    return render_template("movie_info.html", movie=movie)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
