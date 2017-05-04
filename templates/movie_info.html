@@ -4,6 +4,29 @@
     <h2>Movie Info for {{ movie.title }}</h2><br>
     Released Date: {{ movie.released_at }}<br>
     <a href="{{ movie.imdb_url }}"> IMDB Link</a><br>
+    {% if 'user_id' in session %}
+      
+      {% if user_rating.score %}
+        Your rating is: {{ user_rating.score }}<br>
+        You may update below.
+      {% else %} You do not have a rating for this movie. Enter your rating below.
+      {% endif %}
+      <form action="/add_rating" method="POST">
+        <select name="rating">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <input type="hidden" name="movie_id" value="{{ movie.movie_id }}">
+        <input type="submit">
+      </form>
+    {% endif %}
+
+    <br>
+
+
     <table>
       <tr>
         <th>User ID</th>

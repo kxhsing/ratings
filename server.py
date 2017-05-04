@@ -131,7 +131,43 @@ def movie_info(movie_id):
     """Show movie info."""
     movie = Movie.query.filter(Movie.movie_id==movie_id).one()
 
-    return render_template("movie_info.html", movie=movie)
+    if 'user_id' in session:
+        user_rating = Rating.query.filter(Rating.user_id==session['user_id'], 
+                                            Rating.movie_id==movie_id).one()
+    else:
+        user_rating = None
+
+    return render_template("movie_info.html",
+                            movie=movie,
+                            user_rating=user_rating)
+
+@app.route('/add_rating', methods=["POST"])
+def add_rating():
+    """Adding or updating a rating for a movie"""
+
+    user_id = session['user_id']
+    rating = int(request.form.get("rating"))
+    movie_id = request.form.get("movie_id")
+
+    print "*****~*~*~*~*~*~*~*~*~*~********"
+
+    if Rating.query.filter(Rating.user_id==user_id, 
+                            Rating.movie_id==movie_id).one().score:
+
+        print "WOW WE MADE IT"
+        # import pdb; pdb.set_trace()
+        current_rating = Rating.query.filter(Rating.user_id==user_id, Rating.movie_id==movie_id).one()
+        current_rating.score = rating
+        print current_rating
+        # db.session.add(current_rating)
+        db.session.commit()
+    else: # Insert into DB
+        new_rating = Rating(movie_id=movie_id, user_id=user_id, score=rating)
+        db.session.add(new_rating)
+        db.session.commit()
+
+    print "Please work"
+    return redirect("/movies/" + movie_id)
 
 
 if __name__ == "__main__":
