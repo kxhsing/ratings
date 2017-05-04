@@ -131,15 +131,28 @@ def movie_info(movie_id):
     """Show movie info."""
     movie = Movie.query.filter(Movie.movie_id==movie_id).one()
 
+    # Checking if user is logged in
     if 'user_id' in session:
-        user_rating = Rating.query.filter(Rating.user_id==session['user_id'], 
-                                            Rating.movie_id==movie_id).one()
-    else:
-        user_rating = None
+        try: # If user has a rating already
+            user_rating = Rating.query.filter(Rating.user_id==session['user_id'],
+                                Rating.movie_id==movie_id).one()
+        except: # If user does not have a rating
+            user_rating = None
+
+    # user_rating = None
+    # Checking to see if user is logged in
+    # if 'user_id' in session:
+    #     r = Rating.query.filter(Rating.user_id==session['user_id'],
+    #                             Rating.movie_id==movie_id).all()
+    #     # Checking if logged-in user has rated the movie
+    #     if r != []:
+    #         # Finding the rating object for rated movie
+    #         user_rating = r[0]
 
     return render_template("movie_info.html",
                             movie=movie,
                             user_rating=user_rating)
+
 
 @app.route('/add_rating', methods=["POST"])
 def add_rating():
@@ -149,24 +162,28 @@ def add_rating():
     rating = int(request.form.get("rating"))
     movie_id = request.form.get("movie_id")
 
-    print "*****~*~*~*~*~*~*~*~*~*~********"
-
-    if Rating.query.filter(Rating.user_id==user_id, 
-                            Rating.movie_id==movie_id).one().score:
-
-        print "WOW WE MADE IT"
-        # import pdb; pdb.set_trace()
-        current_rating = Rating.query.filter(Rating.user_id==user_id, Rating.movie_id==movie_id).one()
+    try: # If user already has a rating for the movie
+        current_rating = Rating.query.filter(Rating.user_id==user_id, 
+                            Rating.movie_id==movie_id).one()
         current_rating.score = rating
-        print current_rating
-        # db.session.add(current_rating)
         db.session.commit()
-    else: # Insert into DB
+    except: # Creating new Rating for the user and adding to db
         new_rating = Rating(movie_id=movie_id, user_id=user_id, score=rating)
         db.session.add(new_rating)
         db.session.commit()
 
-    print "Please work"
+    # r = Rating.query.filter(Rating.user_id==user_id,
+    #                         Rating.movie_id==movie_id).all()
+    # if r != []:
+    #     # import pdb; pdb.set_trace()
+    #     current_rating = r[0]
+    #     current_rating.score = rating
+    #     db.session.commit()
+    # else: # Insert into DB
+    #     new_rating = Rating(movie_id=movie_id, user_id=user_id, score=rating)
+    #     db.session.add(new_rating)
+    #     db.session.commit()
+
     return redirect("/movies/" + movie_id)
 
 

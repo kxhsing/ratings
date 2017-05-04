@@ -6,7 +6,7 @@
     <a href="{{ movie.imdb_url }}"> IMDB Link</a><br>
     {% if 'user_id' in session %}
       
-      {% if user_rating.score %}
+      {% if user_rating is not none %}
         Your rating is: {{ user_rating.score }}<br>
         You may update below.
       {% else %} You do not have a rating for this movie. Enter your rating below.
