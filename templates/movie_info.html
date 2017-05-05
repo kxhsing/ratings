@@ -4,12 +4,19 @@
     <h2>Movie Info for {{ movie.title }}</h2><br>
     Released Date: {{ movie.released_at }}<br>
     <a href="{{ movie.imdb_url }}"> IMDB Link</a><br>
+    <p>Average rating: {{ average }}</p><br>
     {% if 'user_id' in session %}
       
-      {% if user_rating is not none %}
+      {% if user_rating %}
         Your rating is: {{ user_rating.score }}<br>
+        {% if beratement %}
+          <h3> {{ beratement }} </h3>
+        {% endif %}
         You may update below.
-      {% else %} You do not have a rating for this movie. Enter your rating below.
+      {% else %} 
+        You do not have a rating for this movie. <br>
+        We predict you will rate this movie {{ prediction }}.</br>
+        Enter your rating below.<br>
       {% endif %}
       <form action="/add_rating" method="POST">
         <select name="rating">
